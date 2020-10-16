@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace RogueLike2D
@@ -14,7 +15,7 @@ namespace RogueLike2D
 
         [SerializeField] private float levelStartDelay = 2f;
         [SerializeField] private float turnDelay = .1f;
-        [SerializeField] private int level = 1;
+        [SerializeField] private int level = 0;
         [SerializeField] private BoardManager boardScript;
 
         [HideInInspector] public bool playersTurns = true;
@@ -36,7 +37,8 @@ namespace RogueLike2D
             DontDestroyOnLoad(gameObject);
             _enemies = new List<Enemy>();
             boardScript = GetComponent<BoardManager>();
-            InitGame();
+
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
         public void GameOver()
@@ -58,9 +60,9 @@ namespace RogueLike2D
             StartCoroutine(MoveEnemies());
         }
 
-        private void OnLevelWasLoaded()
+        private void OnSceneLoaded(Scene scene, LoadSceneMode loadMode)
         {
-            level++;
+            level += 1;
             InitGame();
         }
 

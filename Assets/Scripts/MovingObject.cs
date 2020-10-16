@@ -81,6 +81,7 @@ namespace RogueLike2D
                 var newPosition = Vector3.MoveTowards(_rb2D.position, end, _inverseMoveTime * Time.deltaTime);
                 _rb2D.MovePosition(newPosition);
                 sqrMagnitudeDistance = (transform.position - end).sqrMagnitude;
+                // позволяет выполнятся всему остальному коду с сохраненим состояния. 
                 yield return null;
             }
         }

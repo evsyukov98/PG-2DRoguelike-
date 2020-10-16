@@ -22,11 +22,11 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/GameManager.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Loader.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Wall.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/MovingObject.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/SoundManager.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Enemy.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Player.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/BoardManager.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/MovingObject.cs" />
       </list>
     </option>
   </component>
@@ -70,7 +70,7 @@
       <option name="presentableId" value="Default" />
       <updated>1602775881931</updated>
       <workItem from="1602775886285" duration="4018000" />
-      <workItem from="1602831429625" duration="21869000" />
+      <workItem from="1602831429625" duration="24945000" />
     </task>
     <servers />
   </component>
