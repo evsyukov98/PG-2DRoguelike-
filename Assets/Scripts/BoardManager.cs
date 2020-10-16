@@ -1,118 +1,115 @@
 ﻿using UnityEngine;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Random = UnityEngine.Random;
 
-public class BoardManager : MonoBehaviour
+namespace RogueLike2D
 {
-    [Serializable]
-    public class Count
+    public class BoardManager : MonoBehaviour
     {
-        public int minimum;
-        public int maximum;
 
-        public Count(int min, int max)
+        [Serializable]
+        public class Count
         {
-            minimum = min;
-            maximum = max;
-        }
-    }
+            public int minimum;
+            public int maximum;
 
-    public int columns = 8;
-    public int rows = 8;
-    public Count wallCount = new Count(5,9);
-    public Count foodCount = new Count(1,9);
-    public GameObject exit;
-    
-    public GameObject[] floorTiles;
-    public GameObject[] wallTiles;
-    public GameObject[] foodTiles;
-    public GameObject[] enemyTiles;
-    public GameObject[] outerWallTiles;
-
-    private Transform boardHolder;
-    
-    // куда возможно поставить обьекты
-    private List<Vector3> gridPosition = new List<Vector3>();
-
-    private void InitialiseList()
-    {
-        gridPosition.Clear();
-
-        for (int x = 1; x < columns - 1; x++)
-        {
-            for (int y = 1; y < rows; y++)
+            public Count(int min, int max)
             {
-                gridPosition.Add(new Vector3(x,y,0f));
+                minimum = min;
+                maximum = max;
             }
         }
-    }
 
-    private void BoardSetup()
-    {
-        boardHolder = new GameObject("Board").transform;
+        [SerializeField] private int columns = 8;
+        [SerializeField] private int rows = 8;
+        [SerializeField] private Count wallCount = new Count(5, 9);
+        [SerializeField] private Count foodCount = new Count(1, 9);
 
-        for (int x = -1; x< columns+1; x++)
+        [SerializeField] private GameObject exit = default;
+        [SerializeField] private GameObject[] floorTiles = default;
+        [SerializeField] private GameObject[] wallTiles = default;
+        [SerializeField] private GameObject[] foodTiles = default;
+        [SerializeField] private GameObject[] enemyTiles = default;
+        [SerializeField] private GameObject[] outerWallTiles = default;
+
+        private Transform _boardHolder;
+
+        private readonly List<Vector3> _gridPosition = new List<Vector3>();
+
+        private void InitialiseList()
         {
-            for (int y = -1; y < rows +1; y++)
+            _gridPosition.Clear();
+
+            for (var x = 1; x < columns - 1; x++)
             {
-                GameObject toInstantiate = floorTiles[Random.Range(0, floorTiles.Length)];
-                
-                // Стенки находятся на -1 значениях и максимальных в нашем случае(columns = 8)
-                if (x == -1 || x == columns || y == -1 || y == rows)
+                for (var y = 1; y < rows; y++)
                 {
-                    toInstantiate = outerWallTiles[Random.Range(0, outerWallTiles.Length)];
+                    _gridPosition.Add(new Vector3(x, y, 0f));
                 }
-
-                GameObject instance = Instantiate(toInstantiate, new Vector3(x, y, 0f), Quaternion.identity);
-                
-                instance.transform.SetParent(boardHolder);
             }
         }
-    }
 
-    private Vector3 RandomPosition()
-    {
-        int randomIndex = Random.Range(0, gridPosition.Count());
-        Vector3 randomPosition = gridPosition[randomIndex];
-        
-        // удаляем из списка данную позицию 
-        gridPosition.RemoveAt(randomIndex);
-        return randomPosition;
-    }
-
-    /// <summary>
-    /// Генерация из массива случайных обьектов в случайных местах.
-    /// </summary>
-    /// <param name="tileArray">Массив обьектов</param>
-    /// <param name="minimum">Минимальное кол-во обьектов</param>
-    /// <param name="maximum">Максимальное кол-во обьектов</param>
-    private void LayoutObjectAtRandom(GameObject[] tileArray, int minimum, int maximum)
-    {
-        int objectCount = Random.Range(minimum, maximum + 1);
-
-        for (int i = 0; i < objectCount; i++)
+        private void BoardSetup()
         {
-            Vector3 randomPosition = RandomPosition();
-            GameObject tileChoice = tileArray[Random.Range(0, tileArray.Length)];
-            Instantiate(tileChoice, randomPosition, Quaternion.identity);
+            _boardHolder = new GameObject("Board").transform;
+
+            for (var x = -1; x < columns + 1; x++)
+            {
+                for (var y = -1; y < rows + 1; y++)
+                {
+                    var toInstantiate = floorTiles[Random.Range(0, floorTiles.Length)];
+
+                    if (x == -1 || x == columns || y == -1 || y == rows)
+                    {
+                        toInstantiate = outerWallTiles[Random.Range(0, outerWallTiles.Length)];
+                    }
+
+                    var instance = Instantiate(toInstantiate, new Vector3(x, y, 0f), Quaternion.identity);
+
+                    instance.transform.SetParent(_boardHolder);
+                }
+            }
+        }
+
+        private Vector3 RandomPosition()
+        {
+            var randomIndex = Random.Range(0, _gridPosition.Count);
+            var randomPosition = _gridPosition[randomIndex];
+
+            _gridPosition.RemoveAt(randomIndex);
+            return randomPosition;
+        }
+
+        /// <summary>
+        /// Генерация из массива случайных обьектов в случайных местах.
+        /// </summary>
+        /// <param name="tileArray">Массив обьектов</param>
+        /// <param name="minimum">Минимальное кол-во обьектов</param>
+        /// <param name="maximum">Максимальное кол-во обьектов</param>
+        private void LayoutObjectAtRandom(GameObject[] tileArray, int minimum, int maximum)
+        {
+            var objectCount = Random.Range(minimum, maximum + 1);
+
+            for (var i = 0; i < objectCount; i++)
+            {
+                var randomPosition = RandomPosition();
+                var tileChoice = tileArray[Random.Range(0, tileArray.Length)];
+                Instantiate(tileChoice, randomPosition, Quaternion.identity);
+            }
+        }
+
+        public void SetupScene(int level)
+        {
+            BoardSetup();
+            InitialiseList();
+            LayoutObjectAtRandom(wallTiles, wallCount.minimum, wallCount.maximum);
+            LayoutObjectAtRandom(foodTiles, foodCount.minimum, foodCount.maximum);
+
+            var enemyCount = (int) Mathf.Log(level, 2f);
+            LayoutObjectAtRandom(enemyTiles, enemyCount, enemyCount);
+
+            Instantiate(exit, new Vector3(columns - 1, rows - 1, 0f), Quaternion.identity);
         }
     }
-
-    public void SetupScene(int level)
-    {
-        BoardSetup();
-        InitialiseList();
-        LayoutObjectAtRandom(wallTiles, wallCount.minimum, wallCount.maximum);
-        LayoutObjectAtRandom(foodTiles, foodCount.minimum, foodCount.maximum);
-        
-        // увеличение кол-ва врагов в логарифмическом порядке 2^x = level
-        int enemyCount = (int) Mathf.Log(level, 2f);
-        LayoutObjectAtRandom(enemyTiles, enemyCount,enemyCount);
-
-        Instantiate(exit, new Vector3(columns - 1, rows - 1, 0f), Quaternion.identity);
-    }
- 
 }

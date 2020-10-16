@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
 
-public class Loader : MonoBehaviour
+namespace RogueLike2D
 {
-    public GameObject gameManager;
-    private void Awake()
+    public class Loader : MonoBehaviour
     {
-        if (GameManager.instance == null) Instantiate(gameManager);
+
+        [SerializeField] private GameObject gameManager = default;
+
+        private void Awake()
+        {
+            if (GameManager.instance == null) Instantiate(gameManager);
+        }
     }
 }
