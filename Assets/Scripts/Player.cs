@@ -25,9 +25,7 @@ namespace RogueLike2D
         [SerializeField] private AudioClip drinkSound1 = default;
         [SerializeField] private AudioClip drinkSound2 = default;
         [SerializeField] private AudioClip gameOverSound = default;
-
-        private Vector2 _touchOrigin = -Vector2.one;
-
+        
         private Animator _animator;
         private int _food;
 
@@ -56,8 +54,7 @@ namespace RogueLike2D
             foodText.text = $"Food: {_food}";
 
             base.AttemptMove<T>(xDir, yDir);
-
-
+            
             if (Move(xDir, yDir, out _))
             {
                 SoundManager.instance.RandomizeSfx(moveSound1, moveSound2);
@@ -86,45 +83,18 @@ namespace RogueLike2D
 
             var horizontal = 0;
             var vertical = 0;
-
-#if UNITY_STANDALONE || UNITY_WEBPLAYER
-
+            
             horizontal = (int) Input.GetAxisRaw("Horizontal");
             vertical = (int) Input.GetAxisRaw("Vertical");
 
             if (horizontal != 0) vertical = 0;
 
-#elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
-            if (Input.touchCount > 0)
-            {
-                Touch myTouch = Input.touches[0];
-
-                if (myTouch.phase == TouchPhase.Began)
-                {
-                    _touchOrigin = myTouch.position;
-                }
-
-                else if (myTouch.phase == TouchPhase.Ended && _touchOrigin.x >= 0)
-                {
-                    Vector2 touchEnd = myTouch.position;
-
-                    float x = touchEnd.x - _touchOrigin.x;
-
-                    float y = touchEnd.y - _touchOrigin.y;
-
-                    _touchOrigin.x = -1;
-
-                    if (Mathf.Abs(x) > Mathf.Abs(y))
-                        horizontal = x > 0 ? 1 : -1;
-                    else
-                        vertical = y > 0 ? 1 : -1;
-                }
-            }
-#endif
-
             if (horizontal != 0 || vertical != 0)
             {
-                AttemptMove<Wall>(horizontal, vertical);
+                if (endMoving)
+                {
+                    AttemptMove<Wall>(horizontal, vertical);
+                }
             }
         }
 

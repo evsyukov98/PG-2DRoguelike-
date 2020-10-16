@@ -14,7 +14,7 @@ namespace RogueLike2D
         public int playerFoodPoint = 100;
 
         [SerializeField] private float levelStartDelay = 2f;
-        [SerializeField] private float turnDelay = .1f;
+        [SerializeField] private float turnDelay = 0.1f;
         [SerializeField] private int level = 0;
         [SerializeField] private BoardManager boardScript;
 
@@ -95,10 +95,10 @@ namespace RogueLike2D
                 yield return new WaitForSeconds(turnDelay);
             }
 
-            foreach (var t in _enemies)
+            foreach (var enemy in _enemies)
             {
-                t.MoveEnemy();
-                yield return new WaitForSeconds(t.moveTime);
+                StartCoroutine(enemy.MoveEnemy());
+                yield return new WaitForSeconds(enemy.moveTime);
             }
 
             playersTurns = true;

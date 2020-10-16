@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace RogueLike2D
 {
@@ -40,8 +41,13 @@ namespace RogueLike2D
             _skipMove = true;
         }
 
-        public void MoveEnemy()
+        public IEnumerator MoveEnemy()
         {
+            while (!endMoving)
+            {
+                yield return null;
+            }
+            
             var xDir = 0;
             var yDir = 0;
 
@@ -57,6 +63,8 @@ namespace RogueLike2D
             AttemptMove<Player>(xDir, yDir);
         }
 
+        
+        
         protected override void OnCantMove<T>(T component)
         {
             var hitPlayer = component as Player;

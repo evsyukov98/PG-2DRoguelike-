@@ -10,6 +10,8 @@ namespace RogueLike2D
 
         public float moveTime = 0.1f;
 
+        protected static bool endMoving = true;
+
         [SerializeField] private LayerMask blockingLayer = default;
 
         private BoxCollider2D _boxCollider;
@@ -82,8 +84,12 @@ namespace RogueLike2D
                 _rb2D.MovePosition(newPosition);
                 sqrMagnitudeDistance = (transform.position - end).sqrMagnitude;
                 // позволяет выполнятся всему остальному коду с сохраненим состояния. 
+
+                endMoving = false;
                 yield return null;
             }
+
+            endMoving = true;
         }
 
         protected abstract void OnCantMove<T>(T component) where T : Component;
