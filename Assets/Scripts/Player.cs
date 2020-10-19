@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections;
 
 namespace RogueLike2D
 {
     [RequireComponent(typeof(Animator))]
+    [RequireComponent(typeof(Rigidbody2D))]
+
     public class Player : MovingObject, IDamageble
     {
         
@@ -17,20 +20,21 @@ namespace RogueLike2D
         [SerializeField] private float restartLevelDelay = 1f;
 
         [SerializeField] private Text foodText = default;
-
-        [SerializeField] private AudioClip moveSound1 = default;
-        [SerializeField] private AudioClip moveSound2 = default;
+        
         [SerializeField] private AudioClip eatSound1 = default;
         [SerializeField] private AudioClip eatSound2 = default;
         [SerializeField] private AudioClip drinkSound1 = default;
         [SerializeField] private AudioClip drinkSound2 = default;
         [SerializeField] private AudioClip gameOverSound = default;
-        
+
+        private Rigidbody2D _rigidbody2D;
         private Animator _animator;
         private int _food;
 
         protected override void Start()
         {
+            _rigidbody2D = GetComponent<Rigidbody2D>();
+            
             _animator = GetComponent<Animator>();
 
             _food = GameManager.instance.playerFoodPoint;
@@ -55,7 +59,6 @@ namespace RogueLike2D
 
             base.AttemptMove(xDir, yDir);
 
-            Debug.Log("check if here");
             CheckIfGameOver();
 
             GameManager.instance.playersTurns = false;
@@ -75,30 +78,55 @@ namespace RogueLike2D
             GameManager.instance.playerFoodPoint = _food;
         }
 
+        private Vector2 _direction;
+        
         private void Update()
         {
             if (!GameManager.instance.playersTurns) return;
 
-            var horizontal = 0;
-            var vertical = 0;
-
-            bool distantAttack =  Input.GetKeyDown(KeyCode.X);
-            horizontal = (int) Input.GetAxisRaw("Horizontal");
-            vertical = (int) Input.GetAxisRaw("Vertical");
+            var distantAttack =  Input.GetKeyDown(KeyCode.X);
+            var horizontal = (int) Input.GetAxisRaw("Horizontal");
+            var vertical = (int) Input.GetAxisRaw("Vertical");
+            
+            if (horizontal != 0) vertical = 0;
+            
+            _direction = new Vector2(horizontal,vertical);
 
             if (distantAttack)
             {
-                
+                StartCoroutine(Launch());
             }
             
-            if (horizontal != 0) vertical = 0;
-
             if (horizontal == 0 && vertical == 0) return;
-            
+
             if (endMoving)
             {
                 AttemptMove(horizontal, vertical);
             }
+        }
+        
+        private IEnumerator Launch()
+        {
+            while (_direction == Vector2.zero)
+            {
+                endMoving = false;
+                yield return null;
+            }
+            
+            var projectileObject = PoolManager.instance.GetPoolObject(PoolType.Knife);
+            
+            projectileObject.transform.position = _rigidbody2D.position + _direction;
+
+            if (projectileObject.TryGetComponent<Projectile>(out var projectile))
+            {
+                projectile.Launch(_direction, 0.05f);
+            }
+            _food -= 10;
+            foodText.text = $"-10 Food: {_food}";
+            
+            GameManager.instance.playersTurns = false;
+
+            endMoving = true;
         }
 
         private void OnTriggerEnter2D(Collider2D other)

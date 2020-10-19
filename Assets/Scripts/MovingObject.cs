@@ -27,25 +27,7 @@ namespace RogueLike2D
 
         /// <summary>
         /// Попытка движения.
-        /// Если ничего нет передвинуться.
-        /// Если есть (blockingLayer) вызвать его поведенье.
         /// </summary>
-        /// <typeparam name="T">скрипт обьекта на который мы движемся</typeparam>
-        /*protected virtual void AttemptMove<T>(int xDir, int yDir)
-            where T : Component
-        {
-            var canMove = Move(xDir, yDir, out var hit);
-
-            if (hit.transform == null) return;
-
-            var hitComponent = hit.transform.GetComponent<T>();
-
-            if (!canMove && hitComponent != null)
-            {
-                OnCantMove(hitComponent);
-            }
-        }*/
-        
         protected virtual void AttemptMove(int xDir, int yDir)
         {
             if(Move(xDir, yDir, out var hit)) return;

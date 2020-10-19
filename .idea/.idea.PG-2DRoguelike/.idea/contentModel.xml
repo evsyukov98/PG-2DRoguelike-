@@ -21,8 +21,10 @@
             <e p="Pool.cs" t="Include" />
             <e p="PoolManager.cs" t="Include" />
             <e p="PoolType.cs" t="Include" />
+            <e p="Projectile.cs" t="Include" />
           </e>
           <e p="Player.cs" t="Include" />
+          <e p="Singleton.cs" t="Include" />
           <e p="SoundManager.cs" t="Include" />
           <e p="Wall.cs" t="Include" />
         </e>

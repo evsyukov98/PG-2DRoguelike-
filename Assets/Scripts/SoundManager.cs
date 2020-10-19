@@ -2,10 +2,10 @@
 
 namespace RogueLike2D
 {
-    public class SoundManager : MonoBehaviour
+    public class SoundManager : Singleton<SoundManager>
     {
 
-        public static SoundManager instance = null;
+        /*public static SoundManager instance = null;*/
         public AudioSource musicSource;
 
         [SerializeField] private AudioSource efxSource = default;
@@ -15,8 +15,7 @@ namespace RogueLike2D
 
         private void Awake()
         {
-            if (instance == null) instance = this;
-            else if (instance != this) Destroy(gameObject);
+            if (instance != this) Destroy(gameObject);
 
             DontDestroyOnLoad(gameObject);
         }

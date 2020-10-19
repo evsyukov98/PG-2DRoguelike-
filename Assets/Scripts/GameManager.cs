@@ -7,10 +7,9 @@ using UnityEngine.UI;
 namespace RogueLike2D
 {
     [RequireComponent(typeof(BoardManager))]
-    public class GameManager : MonoBehaviour
+    public class GameManager : Singleton<GameManager>
     {
-
-        public static GameManager instance;
+        
         public int playerFoodPoint = 100;
 
         [SerializeField] private float levelStartDelay = 2f;
@@ -27,11 +26,6 @@ namespace RogueLike2D
 
         private void Awake()
         {
-            if (instance == null) instance = this;
-            else if (instance != this)
-            {
-                Destroy(gameObject);
-            }
 
             DontDestroyOnLoad(gameObject);
             _enemies = new List<Enemy>();
