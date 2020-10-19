@@ -31,6 +31,8 @@ namespace RogueLike2D
         private Animator _animator;
         private int _food;
 
+        private bool _isInDistanceAttack = false;
+
         protected override void Start()
         {
             _rigidbody2D = GetComponent<Rigidbody2D>();
@@ -83,50 +85,55 @@ namespace RogueLike2D
         private void Update()
         {
             if (!GameManager.instance.playersTurns) return;
-
-            var distantAttack =  Input.GetKeyDown(KeyCode.X);
+            if (IsMoving) return;
+            
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                _isInDistanceAttack = !_isInDistanceAttack;
+                foodText.text = _isInDistanceAttack ? "Distance attack" : "Moving";
+            }
             var horizontal = (int) Input.GetAxisRaw("Horizontal");
             var vertical = (int) Input.GetAxisRaw("Vertical");
             
+            if (horizontal == 0 && vertical == 0) return;
             if (horizontal != 0) vertical = 0;
             
             _direction = new Vector2(horizontal,vertical);
 
-            if (distantAttack)
-            {
-                StartCoroutine(Launch());
-            }
-            
-            if (horizontal == 0 && vertical == 0) return;
-
-            if (endMoving)
-            {
-                AttemptMove(horizontal, vertical);
-            }
+            if (_isInDistanceAttack) StartCoroutine(LaunchProjectile());
+            else AttemptMove(horizontal, vertical);
         }
         
-        private IEnumerator Launch()
+        private IEnumerator LaunchProjectile()
         {
             while (_direction == Vector2.zero)
             {
-                endMoving = false;
+                IsMoving = false;
                 yield return null;
             }
-            
+
+            _isInDistanceAttack = false;
             var projectileObject = PoolManager.instance.GetPoolObject(PoolType.Knife);
             
             projectileObject.transform.position = _rigidbody2D.position + _direction;
+            IsMoving = true;
 
             if (projectileObject.TryGetComponent<Projectile>(out var projectile))
             {
-                projectile.Launch(_direction, 0.05f);
+                projectile.Launch(_direction, 0.05f, OnProjectileDespawned);
+                
+                _food -= 10;
+                foodText.text = $"-10 Food: {_food}";
+                yield break;
             }
-            _food -= 10;
-            foodText.text = $"-10 Food: {_food}";
-            
-            GameManager.instance.playersTurns = false;
 
-            endMoving = true;
+            OnProjectileDespawned();
+        }
+
+        private void OnProjectileDespawned()
+        {
+            GameManager.instance.playersTurns = false;
+            IsMoving = false;
         }
 
         private void OnTriggerEnter2D(Collider2D other)

@@ -44,7 +44,7 @@ namespace RogueLike2D
 
         public IEnumerator MoveEnemy()
         {
-            while (!endMoving)
+            while (!IsMoving)
             {
                 yield return null;
             }

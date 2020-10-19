@@ -90,7 +90,7 @@ namespace RogueLike2D
             {
                 yield return new WaitForSeconds(turnDelay);
             }
-
+            
             foreach (var enemy in _enemies)
             {
                 StartCoroutine(enemy.MoveEnemy());

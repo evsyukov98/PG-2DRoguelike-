@@ -39,14 +39,14 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/ObjectPool/IPoolable.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Singleton.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/SoundManager.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/GameManager.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/InputManager.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/ObjectPool/Pool.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/ObjectPool/PoolManager.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/ObjectPool/PoolType.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/MovingObject.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/ObjectPool/Projectile.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Player.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/MovingObject.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/GameManager.cs" />
       </list>
     </option>
   </component>
@@ -95,7 +95,7 @@
       <workItem from="1602831429625" duration="31223000" />
       <workItem from="1602871403844" duration="2689000" />
       <workItem from="1603014737843" duration="6048000" />
-      <workItem from="1603091602686" duration="16903000" />
+      <workItem from="1603091602686" duration="21618000" />
     </task>
     <servers />
   </component>

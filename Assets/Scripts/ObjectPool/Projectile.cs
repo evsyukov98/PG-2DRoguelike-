@@ -1,19 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using RogueLike2D;
 using UnityEngine;
 
 public class Projectile : MonoBehaviour, IPoolable
 {
+    
     private Rigidbody2D _rigidbody2D;
+    private Action _onDespawnCallback;    
 
     private void Awake()
     {
         _rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
-    public void Launch(Vector2 direction, float force)
+    public void Launch(Vector2 direction, float force, Action onDespawn)
     {
+        _onDespawnCallback = onDespawn;
         _rigidbody2D.AddForce(direction * force);
     }
     
@@ -38,5 +40,7 @@ public class Projectile : MonoBehaviour, IPoolable
     public void OnDespawn()
     {
         gameObject.SetActive(false);
+        _onDespawnCallback?.Invoke();
+        _onDespawnCallback = null;
     }
 }

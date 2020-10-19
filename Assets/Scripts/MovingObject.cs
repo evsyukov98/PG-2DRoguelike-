@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 namespace RogueLike2D
@@ -10,7 +11,7 @@ namespace RogueLike2D
 
         public float moveTime = 0.1f;
 
-        protected static bool endMoving = true;
+        protected static bool IsMoving = false;
 
         [SerializeField] private LayerMask blockingLayer = default;
 
@@ -68,21 +69,24 @@ namespace RogueLike2D
         /// <returns></returns>
         private IEnumerator SmoothMovement(Vector3 end)
         {
+            var inverseMoveTime = 1f / moveTime;
+            
             var sqrMagnitudeDistance = (transform.position - end).sqrMagnitude;
 
+            if (this is Player) IsMoving = true;
+            
             // float.epsilon - число приближенное к нулю
             while (sqrMagnitudeDistance > float.Epsilon)
             {
-                var newPosition = Vector3.MoveTowards(_rb2D.position, end, _inverseMoveTime * Time.deltaTime);
+                var newPosition = Vector3.MoveTowards(_rb2D.position, end, inverseMoveTime * Time.deltaTime);
                 _rb2D.MovePosition(newPosition);
                 sqrMagnitudeDistance = (transform.position - end).sqrMagnitude;
 
-                endMoving = false;
                 // позволяет выполнятся всему остальному коду с сохраненим состояния. 
                 yield return null;
             }
 
-            endMoving = true;
+            if (this is Player) IsMoving = false;
         }
 
         protected abstract void OnCantMove(IDamageble component);
