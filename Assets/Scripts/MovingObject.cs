@@ -31,7 +31,7 @@ namespace RogueLike2D
         /// Если есть (blockingLayer) вызвать его поведенье.
         /// </summary>
         /// <typeparam name="T">скрипт обьекта на который мы движемся</typeparam>
-        protected virtual void AttemptMove<T>(int xDir, int yDir)
+        /*protected virtual void AttemptMove<T>(int xDir, int yDir)
             where T : Component
         {
             var canMove = Move(xDir, yDir, out var hit);
@@ -44,7 +44,18 @@ namespace RogueLike2D
             {
                 OnCantMove(hitComponent);
             }
+        }*/
+        
+        protected virtual void AttemptMove(int xDir, int yDir)
+        {
+            if(Move(xDir, yDir, out var hit)) return;
+            
+            if(hit.transform.TryGetComponent<IDamageble>(out var hitComponents))
+            {
+                OnCantMove(hitComponents);
+            }
         }
+        
 
         /// <summary>
         /// Двигаться если нет блокирующих обьектов (blockingLayer)
@@ -56,7 +67,7 @@ namespace RogueLike2D
         protected bool Move(int xDir, int yDir, out RaycastHit2D hit)
         {
             Vector2 start = transform.position;
-            var end = start + new Vector2(xDir, yDir);
+            Vector2 end = start + new Vector2(xDir, yDir);
 
             _boxCollider.enabled = false;
             hit = Physics2D.Linecast(start, end, blockingLayer);
@@ -83,15 +94,15 @@ namespace RogueLike2D
                 var newPosition = Vector3.MoveTowards(_rb2D.position, end, _inverseMoveTime * Time.deltaTime);
                 _rb2D.MovePosition(newPosition);
                 sqrMagnitudeDistance = (transform.position - end).sqrMagnitude;
-                // позволяет выполнятся всему остальному коду с сохраненим состояния. 
 
                 endMoving = false;
+                // позволяет выполнятся всему остальному коду с сохраненим состояния. 
                 yield return null;
             }
 
             endMoving = true;
         }
 
-        protected abstract void OnCantMove<T>(T component) where T : Component;
+        protected abstract void OnCantMove(IDamageble component);
     }
 }

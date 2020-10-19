@@ -3,7 +3,7 @@
 namespace RogueLike2D
 {
     [RequireComponent(typeof(SpriteRenderer))]
-    public class Wall : MonoBehaviour
+    public class Wall : MonoBehaviour, IDamageble
     {
 
         [SerializeField] private Sprite dmgSprite = default;
@@ -18,7 +18,7 @@ namespace RogueLike2D
             _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        public void DamageWall(int loss)
+        public void Damaged(int loss)
         {
             SoundManager.instance.RandomizeSfx(chopSound1, chopSound2);
             _spriteRenderer.sprite = dmgSprite;

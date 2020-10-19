@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace RogueLike2D
 {
     [RequireComponent(typeof(Animator))]
-    public class Player : MovingObject
+    public class Player : MovingObject, IDamageble
     {
         
         private static readonly int PlayerHit = Animator.StringToHash("playerHit");
@@ -40,7 +40,7 @@ namespace RogueLike2D
             base.Start();
         }
 
-        public void LoseFood(int loss)
+        public void Damaged(int loss)
         {
             _animator.SetTrigger(PlayerHit);
             _food -= loss;
@@ -48,27 +48,25 @@ namespace RogueLike2D
             CheckIfGameOver();
         }
 
-        protected override void AttemptMove<T>(int xDir, int yDir)
+        protected override void AttemptMove(int xDir, int yDir)
         {
             _food--;
             foodText.text = $"Food: {_food}";
 
-            base.AttemptMove<T>(xDir, yDir);
-            
-            if (Move(xDir, yDir, out _))
-            {
-                SoundManager.instance.RandomizeSfx(moveSound1, moveSound2);
-            }
+            base.AttemptMove(xDir, yDir);
 
+            Debug.Log("check if here");
             CheckIfGameOver();
 
             GameManager.instance.playersTurns = false;
         }
 
-        protected override void OnCantMove<T>(T component)
+        protected override void OnCantMove(IDamageble component)
         {
-            var hitWall = component as Wall;
-            hitWall.DamageWall(wallDamage);
+            var hitWall = component;
+            
+            hitWall.Damaged(wallDamage);
+            
             _animator.SetTrigger(PlayerChop);
         }
 
@@ -83,18 +81,23 @@ namespace RogueLike2D
 
             var horizontal = 0;
             var vertical = 0;
-            
+
+            bool distantAttack =  Input.GetKeyDown(KeyCode.X);
             horizontal = (int) Input.GetAxisRaw("Horizontal");
             vertical = (int) Input.GetAxisRaw("Vertical");
 
+            if (distantAttack)
+            {
+                
+            }
+            
             if (horizontal != 0) vertical = 0;
 
-            if (horizontal != 0 || vertical != 0)
+            if (horizontal == 0 && vertical == 0) return;
+            
+            if (endMoving)
             {
-                if (endMoving)
-                {
-                    AttemptMove<Wall>(horizontal, vertical);
-                }
+                AttemptMove(horizontal, vertical);
             }
         }
 

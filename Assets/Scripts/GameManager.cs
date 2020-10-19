@@ -24,7 +24,6 @@ namespace RogueLike2D
         private GameObject _levelImage;
         private List<Enemy> _enemies;
         private bool _enemiesMoving;
-        private bool _doingSetup;
 
         private void Awake()
         {
@@ -52,6 +51,11 @@ namespace RogueLike2D
         {
             _enemies.Add(script);
         }
+        
+        public void RemoveEnemyFromList(Enemy script)
+        {
+            _enemies.Remove(script);
+        }
 
         private void Update()
         {
@@ -68,7 +72,6 @@ namespace RogueLike2D
 
         private void InitGame()
         {
-            _doingSetup = true;
             _levelImage = GameObject.Find("LevelImage");
             _levelText = GameObject.Find("LevelText").GetComponent<Text>();
             _levelText.text = $"Day {level}";
@@ -82,7 +85,6 @@ namespace RogueLike2D
         private void HideLevelImage()
         {
             _levelImage.SetActive(false);
-            _doingSetup = false;
         }
 
         private IEnumerator MoveEnemies()

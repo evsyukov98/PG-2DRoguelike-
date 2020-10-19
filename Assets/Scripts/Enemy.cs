@@ -4,11 +4,12 @@ using UnityEngine;
 namespace RogueLike2D
 {
     [RequireComponent(typeof(Animator))]
-    public class Enemy : MovingObject
+    public class Enemy : MovingObject, IDamageble
     {
         
         private static readonly int EnemyAttack = Animator.StringToHash("enemyAttack");
 
+        [SerializeField] private int hp = 2;
         [SerializeField] private int playerDamage = default;
         [SerializeField] private AudioClip enemyAttack1 = default;
         [SerializeField] private AudioClip enemyAttack2 = default;
@@ -28,7 +29,7 @@ namespace RogueLike2D
             base.Start();
         }
 
-        protected override void AttemptMove<T>(int xDir, int yDir)
+        protected override void AttemptMove(int xDir, int yDir)
         {
             if (_skipMove)
             {
@@ -36,7 +37,7 @@ namespace RogueLike2D
                 return;
             }
 
-            base.AttemptMove<T>(xDir, yDir);
+            base.AttemptMove(xDir, yDir);
 
             _skipMove = true;
         }
@@ -60,20 +61,32 @@ namespace RogueLike2D
                 xDir = _target.position.x > transform.position.x ? 1 : -1;
             }
 
-            AttemptMove<Player>(xDir, yDir);
+            AttemptMove(xDir, yDir);
         }
 
-        
-        
-        protected override void OnCantMove<T>(T component)
+        protected override void OnCantMove(IDamageble component)
         {
-            var hitPlayer = component as Player;
-
-            hitPlayer.LoseFood(playerDamage);
+            if (!(component is Player)) return;
+            
+            component.Damaged(playerDamage);
 
             _animator.SetTrigger(EnemyAttack);
 
-            SoundManager.instance.RandomizeSfx(enemyAttack1, enemyAttack2);
+            SoundManager.instance.RandomizeSfx(enemyAttack2);
+        }
+
+
+        public void Damaged(int loss)
+        {
+            hp -= loss;
+
+            SoundManager.instance.RandomizeSfx(enemyAttack1);
+
+            if (hp > 0) return;
+            
+            GameManager.instance.RemoveEnemyFromList(gameObject.GetComponent<Enemy>());
+            
+            Destroy(gameObject);
         }
     }
 }
